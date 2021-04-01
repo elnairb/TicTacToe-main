@@ -9,17 +9,13 @@ const QuestionAsker = props => {
   const counter =useRef(0)
 
   const[currentStep,setCurrentStep] = useState('genre');
-  const[genres, setGenres] = useState([]);
-  const [selectedGenre, setSelectedGenre] = useState({ id: -1, text: '' });
+  const[genre, setGenre] = useState("");
   const [questions, setQuestions] = useState([]);
   const [selectedQuestion, setSelectedQuestion] = useState({ id: -1, text: '' });
   const [customQuestionText, setCustomQuestionText] = useState('');
   const [error, setError] = useState('');
 
-  //save the player's genre choice
-  const selectGenre = (index, genre) => {
-    setSelectedGenre({ id: index, text: genre });
-  };
+  const genres = ["family-friendly","only-with-friends","office-friendly"];
 
   //save the player's question choice
   const selectQuestion = (index, question) => {
@@ -57,9 +53,8 @@ const QuestionAsker = props => {
   //write the useEffect here
   useEffect(() => {
     //get a list of 3 randomly selected questions
-    if ((props.GameData !== undefined) && (props.GameData.questionAsker.uid === props.auth.uid) && (props.GameData.question === "")) {
+    if ((props.GameData !== undefined) && (props.GameData.questionAsker.uid === props.auth.uid) && (props.GameData.question === "") && (genre !== "")) {
       setSelectedQuestion({ id: -1, text: '' });
-      setSelectedGenre({ id: -1, text: '' });
       setCustomQuestionText('');
       const getQuestions = async() => {
         let someQuestions = [];
@@ -73,7 +68,7 @@ const QuestionAsker = props => {
           if (dbQuestion.size > 0) {
             dbQuestion.forEach(q => {
                 console.log(q.data())
-                if(q.data().genre === props.genres){
+                if((q.data().genre === genre) && (q.data().questionText !== null)){
                   potentialQuestion = q.data().questionText;
                 }
             });
@@ -81,7 +76,7 @@ const QuestionAsker = props => {
             dbQuestion = await firestore().collection("ao-questions").where(firebase.firestore.FieldPath.documentId(), "<", key).limit(1).get();
             counter.current += 1;
             dbQuestion.forEach(q => {
-              if(q.data().genre === props.genres){
+              if((q.data().genre === genre) && (q.data().questionText !== null)){
                 potentialQuestion = q.data().questionText;
               }
             });
@@ -100,7 +95,7 @@ const QuestionAsker = props => {
       }
       getQuestions();
     }
-  }, [props.GameData, genres]);
+  }, [props.GameData, genre]);
 
 
   //show the question list if no question has been asked
@@ -117,10 +112,10 @@ const QuestionAsker = props => {
                 {"Mortal, which genre shall the Spirits answer?"}
               </Text>
               <View style={{display: "flex", flexDirection: "column", marginTop: 36, alignItems: "center", justifyContent: "flex-start", width: "100%"}}>
-                {genres.map((genre, index) => (
-                  <TouchableOpacity style={selectedGenre.id === index ? props.styles.aoQuestionRowSelected : props.styles.aoQuestionRow} key={index} onPress={() => selectGenre(index, genre) + setCurrentStep('question')}>
+                {genres.map((fetchedGenre) => (
+                  <TouchableOpacity style={genres === fetchedGenre ? props.styles.aoQuestionRowSelected : props.styles.aoQuestionRow} key={fetchedGenre} onPress={() => setGenre(fetchedGenre) + setCurrentStep('question')}>
                     <Text style={props.styles.aoQuestionText}>
-                      {genre}
+                      {fetchedGenre}
                     </Text>
                   </TouchableOpacity>
                 ))}
