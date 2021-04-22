@@ -50,7 +50,6 @@ import Square from '../square';
        }
        return value;
      }))
-     console.log(board)
    };
    
 
@@ -126,6 +125,7 @@ import Square from '../square';
    useEffect(() => {
      checkTie();
      checkWin()
+     updateGrid()
  
        if (player == "X"){
          setPlayer("O");
@@ -170,24 +170,27 @@ import Square from '../square';
  
    if ((props.GameData !== undefined) && (props.GameData.status === "playing")){
    return(
+
+
      <SafeAreaView>
        <Image style={props.styles.aoGreetingsImage} source={require('./img/background.png')} resizeMode={"cover"} />
        <Text style={props.styles.gameText}> Game in Progress... </Text>
        <View style={{alignItems: 'center', justifyContent: 'center', flexDirection: 'row',}}>
-           <Square value ={board[0]} ButtonWidth = '33%' chosenSquare={() => {chosenSquare(0)}} />
-           <Square value ={board[1]} ButtonWidth = '33%' chosenSquare={() => {chosenSquare(1)}} />
-           <Square value ={board[2]} ButtonWidth = '33%' chosenSquare={() => {chosenSquare(2)}} />
+           <Square value ={props.GameData.grid[0]} ButtonWidth = '33%' chosenSquare={() => {chosenSquare(0)}} />
+           <Square value ={props.GameData.grid[1]} ButtonWidth = '33%' chosenSquare={() => {chosenSquare(1)}} />
+           <Square value ={props.GameData.grid[2]} ButtonWidth = '33%' chosenSquare={() => {chosenSquare(2)}} />
        </View>
        <View style={{alignItems: 'center', justifyContent: 'center', flexDirection: 'row',}}>
-           <Square value ={board[3]} ButtonWidth = '33%' chosenSquare={() => {chosenSquare(3)}} />
-           <Square value ={board[4]} ButtonWidth = '33%' chosenSquare={() => {chosenSquare(4)}} />
-           <Square value ={board[5]} ButtonWidth = '33%' chosenSquare={() => {chosenSquare(5)}} />
+           <Square value ={props.GameData.grid[3]} ButtonWidth = '33%' chosenSquare={() => {chosenSquare(3)}} />
+           <Square value ={props.GameData.grid[4]} ButtonWidth = '33%' chosenSquare={() => {chosenSquare(4)}} />
+           <Square value ={props.GameData.grid[5]} ButtonWidth = '33%' chosenSquare={() => {chosenSquare(5)}} />
        </View>
        <View style={{alignItems: 'center', justifyContent: 'center',  flexDirection: 'row', }}>
-           <Square value ={board[6]} ButtonWidth = '33%' chosenSquare={() => {chosenSquare(6)}} />
-           <Square value ={board[7]} ButtonWidth = '33%' chosenSquare={() => {chosenSquare(7)}} />
-           <Square value ={board[8]} ButtonWidth = '33%' chosenSquare={() => {chosenSquare(8)}} />
+           <Square value ={props.GameData.grid[6]} ButtonWidth = '33%' chosenSquare={() => {chosenSquare(6)}} />
+           <Square value ={props.GameData.grid[7]} ButtonWidth = '33%' chosenSquare={() => {chosenSquare(7)}} />
+           <Square value ={props.GameData.grid[8]} ButtonWidth = '33%' chosenSquare={() => {chosenSquare(8)}} />
        </View>
+
      </SafeAreaView>
    );
    }
