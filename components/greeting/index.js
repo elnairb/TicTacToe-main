@@ -41,7 +41,7 @@ const Greeting = props => {
 
   //write the checkGameCode function here
   const checkGameCode = newGameCode => {
-    return firestore().collection("ao-games").where("gameCode", "==", newGameCode)
+    return firestore().collection("ttt-games").where("gameCode", "==", newGameCode)
       .get()
       .then(results => {
         if (results.size > 0) {
@@ -57,13 +57,13 @@ const Greeting = props => {
 
   //write the saveGame function here
 const saveGame = newGameCode => {
-    return firestore().collection("ao-games").add({
+    return firestore().collection("ttt-games").add({
       gameCode: newGameCode,
       status: "waiting",
       players: [],
       owner: auth().currentUser.uid,
-      answer: '',
-      question: '',
+      rounds: 0,
+      grid: ["","","","","","","","",""],
     })
     .then(gameDoc => {
       return gameDoc.id;
@@ -92,7 +92,7 @@ const saveGame = newGameCode => {
   //write the joinGame function here
   const joinGame = () => {
     if (gameCode.length === 4) {
-      return firestore().collection("ao-games").where("gameCode", "==", gameCode.toUpperCase())
+      return firestore().collection("ttt-games").where("gameCode", "==", gameCode.toUpperCase())
       .get()
       .then(results => {
         if (results.size > 0) {
@@ -117,20 +117,15 @@ const saveGame = newGameCode => {
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={props.styles.aoGameContainer}>
         <View style={props.styles.aoGameInnerContainer}>
-          <Image style={props.styles.aoGreetingsImage} source={require('./img/ask-ouija-greetings-background.png')} resizeMode={"cover"} />
+          <Image style={props.styles.aoGreetingsImage} source={require('./img/background.png')} resizeMode={"cover"} />
           <View style={props.styles.aoGameBar}>
 
             {currentStep === 'intro' ? (
               <>
-                <Text style={props.styles.aoGameTitle}>
-                  {"Ask Ouija"}
-                </Text>
-                <Text style={props.styles.aoHeadline}>
-                  {"Greetings, mortal"}
-                </Text>
-                <Text style={props.styles.aoText}>
-                  {"Join hands with your friends and ask the Spirits to answer your most pressing questions."}
-                </Text>
+                <Image style={props.styles.aoGreetingsImage} source={require('./img/background.png')} resizeMode={"cover"} />
+                <Text style={props.styles.aoHeadline}>Tic Tac Toe</Text>
+                <Image style={props.styles.aoCircleImage} source={require('./img/circle3.png')} resizeMode={"center"} />
+                <Text style={props.styles.greetingText}>Play against yiour friends in a classic game of tic tac toe!</Text>
                 <TouchableOpacity style={props.styles.aoPrimaryButton} onPress={() => setCurrentStep('create-or-join')}>
                   <Text style={props.styles.aoPrimaryButtonText}>
                     {"Get Started"}
@@ -143,9 +138,11 @@ const saveGame = newGameCode => {
 
             {currentStep === 'create-or-join' ? (
               <>
-                <TouchableOpacity style={props.styles.aoPrimaryButton} onPress={() => createGame()}>
+                <Image style={props.styles.aoGreetingsImage} source={require('./img/background.png')} resizeMode={"cover"} />
+                <Image style={props.styles.aoCircleImage} source={require('./img/circle3.png')} resizeMode={"center"} />
+                <TouchableOpacity style={props.styles.aoCreateButton} onPress={() => createGame()}>
                   <Text style={props.styles.aoPrimaryButtonText}>
-                    {"Create a Group"}
+                    {"Create a Game"}
                   </Text>
                 </TouchableOpacity>
                 <View style={props.styles.aoOrDividerRow}>
@@ -155,14 +152,14 @@ const saveGame = newGameCode => {
                   </Text>
                   <View style={props.styles.aoOrDivider} />
                 </View>
-                <Text style={{...props.styles.aoText, textAlign: 'left'}}>
-                  {"Enter a code to join a group:"}
+                <Text style={{...props.styles.aoText2, textAlign: 'left'}}>
+                  {"Enter a code to join a game:"}
                 </Text>
                 <View style={props.styles.aoEnterCodeRow}>
                   <TextInput style={props.styles.aoCodeTextbox} placeholder="????" value={gameCode} onChangeText={text => setGameCode(text)} maxLength={4} />
-                  <TouchableOpacity style={gameCode.length === 4 ? {...props.styles.aoPrimaryButton, marginTop: 0, marginLeft: 6, width: "auto"} : {...props.styles.aoPrimaryButtonDisabled, marginTop: 0, marginLeft: 6, width: "auto"}} onPress={() => joinGame()}>
+                  <TouchableOpacity style={gameCode.length === 4 ? {...props.styles.aoJoinButton, marginTop: 0, marginLeft: 6, width: "auto"} : {...props.styles.aoPrimaryButtonDisabled, backgroundColor: '#FFFFFF', marginTop: 0, marginLeft: 6, width: "auto"}} onPress={() => joinGame()}>
                     <Text style={props.styles.aoPrimaryButtonText}>
-                      {"Find Group"}
+                      {"Find Game"}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -173,8 +170,10 @@ const saveGame = newGameCode => {
 
             {currentStep === 'get-name' ? (
               <>
-                <Text style={props.styles.aoHeadline}>
-                  {"Who dares disturb the slumber of the Spirits?"}
+              <Image style={props.styles.aoGreetingsImage} source={require('./img/background.png')} resizeMode={"cover"} />
+              <Image style={props.styles.aoCircleImage} source={require('./img/circle3.png')} resizeMode={"center"} />
+                <Text style={props.styles.aoPlayingText}>
+                  {"Who is playing?"}
                 </Text>
                 <View style={props.styles.aoEnterCodeRow}>
                   <TextInput style={props.styles.aoTextbox} placeholder={"Give us your name..."} value={userName} onChangeText={text => setUserName(text)} />

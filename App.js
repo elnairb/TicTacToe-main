@@ -20,10 +20,8 @@ import firestore from '@react-native-firebase/firestore';
 import styles from './components/stylesheet';
 import Greeting from './components/greeting';
 import Lobby from './components/lobby';
-import ParticipatingSpirit from './components/participating-spirit';
-import AnsweringSpirit from './components/answering-spirit';
-import QuestionAsker from './components/question-asker';
 import ErrorBoundary from './components/error-boundary';
+import Game from './components/game';
 
 const App: () => React$Node = () => {
   const [userAuth, setUserAuth] = useState(null);
@@ -49,7 +47,7 @@ const App: () => React$Node = () => {
   const joinGame = gameDocID => {
     setGameID(gameDocID);
     //start listening for updates to game data
-    subscriber = firestore().collection("ao-games").doc(gameDocID).onSnapshot(doc => {
+    subscriber = firestore().collection("ttt-games").doc(gameDocID).onSnapshot(doc => {
       updateGameData(doc.data());
     });
 
@@ -97,7 +95,7 @@ const App: () => React$Node = () => {
 
   //create the updatePlayers function here
   const updatePlayers = (gameDocID, playersArray) => {
-    return firestore().collection("ao-games").doc(gameDocID).update({
+    return firestore().collection("ttt-games").doc(gameDocID).update({
       players: playersArray,
     })
     .then(() => {
@@ -110,7 +108,7 @@ const App: () => React$Node = () => {
 
   //create the getPlayers function here
   const getPlayers = gameDocID => {
-    return firestore().collection("ao-games").doc(gameDocID).get()
+    return firestore().collection("ttt-games").doc(gameDocID).get()
       .then(doc => {
         if (doc.exists) {
           return doc.data().players;
@@ -197,16 +195,8 @@ const App: () => React$Node = () => {
       <SafeAreaView>
         <ErrorBoundary style={styles}>
           {(() => {
-            if ((gameData !== undefined) && (gameData.status === "playing") && (gameData.questionAsker.uid === auth().currentUser.uid)) {
-              return <QuestionAsker styles={styles} GameData={gameData} GameID={gameID} auth={auth().currentUser} />
-            }
-
-            if ((gameData !== undefined) && (gameData.status === "playing") && (gameData.answeringSpirit.uid === auth().currentUser.uid)) {
-              return <AnsweringSpirit styles={styles} GameData={gameData} GameID={gameID} />
-            }
-
-            if ((gameData !== undefined) && (gameData.status === "playing")) {
-              return <ParticipatingSpirit styles={styles} GameData={gameData} GameID={gameID} />
+             if ((gameData !== undefined) && (gameData.status === "playing")) {
+              return <Game styles={styles} GameData={gameData} GameID={gameID} />
             }
 
             if ((currentScreen === 'greeting') && (auth)) {

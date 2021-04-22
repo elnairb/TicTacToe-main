@@ -8,16 +8,16 @@ const Lobby = props => {
 
   //write the startGame function here
   const startGame = () => {
-    if ((props.GameData !== undefined) && (props.GameData.owner === props.auth.uid) && (props.GameData.players.length > 2)) {
+    if ((props.GameData !== undefined) && (props.GameData.owner === props.auth.uid) && (props.GameData.players.length > 1)) {
 
 
-        let questionAsker = { displayName: '', uid: '', avatar: '' };
-        let answeringSpirit = { displayName: '', uid: '', avatar: '' };
-        while (questionAsker.uid === answeringSpirit.uid) {
-          questionAsker = getRandomPlayer(props.GameData.players);
-          answeringSpirit = getRandomPlayer(props.GameData.players);
+        let playerX = { displayName: '', uid: '', avatar: '' };
+        let playerO = { displayName: '', uid: '', avatar: '' };
+        while (playerX.uid === playerO.uid) {
+          playerX = getRandomPlayer(props.GameData.players);
+          playerO = getRandomPlayer(props.GameData.players);
         }
-        return setRoles(questionAsker, answeringSpirit)
+        return setRoles(playerX, playerO)
           .then(response => {
             if (response.hasError) {
               let friendlyError = { friendly: "Something has gone terribly wrong.", technical: response.value.toString() };
@@ -33,13 +33,13 @@ const Lobby = props => {
   };
 
   //write the setRoles function here
-  const setRoles = (questionAsker, answeringSpirit) => {
-    return firestore().collection("ao-games").doc(props.GameID).update({
+  const setRoles = (playerX, playerO) => {
+    return firestore().collection("ttt-games").doc(props.GameID).update({
       status: "playing",
-      questionAsker: questionAsker,
-      answeringSpirit: answeringSpirit,
-      question: '',
-      answer: '',
+      playerX: playerX,
+      playerO: playerO,
+      rounds: 0,
+      grid: ["","","","","","","","",""],
     })
     .then(() => {
       return { hasError: false, value: null };
@@ -59,9 +59,9 @@ const Lobby = props => {
     <View style={props.styles.aoGameContainer}>
       <View style={props.styles.aoGameInnerContainer}>
         <View style={props.styles.aoLobbyContainer}>
-          <View style={props.styles.aoLobbyInnerContainer}>
-            <Text style={props.styles.aoText}>
-              {"Your friends can join your group using this code:"}
+        <Image style={props.styles.aoGreetingsImage} source={require('./img/background.png')} resizeMode={"cover"} />
+            <Text style={props.styles.lobbyText}>
+              {"Your friends can join your game using this code:"}
             </Text>
             <Text style={props.styles.aoGameCode}>
               {props.GameData.gameCode}
@@ -76,12 +76,8 @@ const Lobby = props => {
                 </View>
               ))}
             </>
-          </View>
-          <Text style={{...props.styles.aoText, marginTop: 12, marginBottom: 24}}>
-            {props.GameData.players.length < 8 ? "Waiting for people to join..." : null}
-          </Text>
-          {(props.GameData.owner === props.auth.uid && props.GameData.players.length > 2) ? (
-            <TouchableOpacity style={props.styles.aoPrimaryButton} onPress={() => startGame()}>
+            {(props.GameData.owner === props.auth.uid && props.GameData.players.length > 1) ? (
+            <TouchableOpacity style={{...props.styles.aoPrimaryButton, marginTop:400}} onPress={() => startGame()}>
               <Text style={props.styles.aoPrimaryButtonText}>
                 {"Let's Play"}
               </Text>
@@ -89,7 +85,10 @@ const Lobby = props => {
           ) : (
             null
           )}
-        </View>
+          </View>
+          <Text style={{...props.styles.aoText, marginTop:0, marginBottom:50, color: "#000000", fontFamily: 'Heebo-black',fontSize: 34,}}>
+            {props.GameData.players.length < 2 ? "Waiting..." : null}
+          </Text>
       </View>
     </View>
   );
